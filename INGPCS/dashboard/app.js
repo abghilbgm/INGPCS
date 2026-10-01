@@ -296,25 +296,41 @@ function connectVideoStream(cameraId) {
   const canvas = document.getElementById(`canvas-${cameraId}`);
   if (!canvas) return;
   const placeholder = document.getElementById(`placeholder-${cameraId}`);
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { alpha: false });
+
+  /* Lock canvas buffer to 1920×1080 once */
+  canvas.width = 1920;
+  canvas.height = 1080;
+
+  let latestBitmap = null;
+  let rafId = null;
+
+  function drawFrame() {
+    rafId = null;
+    if (!latestBitmap) return;
+    ctx.drawImage(latestBitmap, 0, 0, 1920, 1080);
+    latestBitmap.close();
+    latestBitmap = null;
+  }
 
   ws.onmessage = async (event) => {
     try {
       const blob = new Blob([event.data], { type: "image/jpeg" });
       const bitmap = await createImageBitmap(blob);
-      if (canvas.width !== bitmap.width || canvas.height !== bitmap.height) {
-        canvas.width = bitmap.width; canvas.height = bitmap.height;
-      }
-      ctx.drawImage(bitmap, 0, 0);
-      bitmap.close();
+      /* Drop previous undisplayed frame to keep only latest */
+      if (latestBitmap) latestBitmap.close();
+      latestBitmap = bitmap;
+      if (!rafId) rafId = requestAnimationFrame(drawFrame);
       if (placeholder) placeholder.style.display = "none";
     } catch (e) { /* stray partial frame - next one recovers */ }
   };
 
   ws.onclose = () => {
+    if (rafId) cancelAnimationFrame(rafId);
+    if (latestBitmap) { latestBitmap.close(); latestBitmap = null; }
     if (document.getElementById(`placeholder-${cameraId}`)) {
       const p = document.getElementById(`placeholder-${cameraId}`);
-      p.style.display = "block"; p.textContent = "Reconnecting…";
+      p.style.display = "block"; p.textContent = "RECONNECTING…";
     }
     setTimeout(() => { if (document.getElementById(`canvas-${cameraId}`)) connectVideoStream(cameraId); }, 2000);
   };
@@ -440,7 +456,7 @@ function connectEventStream() {
   const proto = location.protocol === "https:" ? "wss" : "ws";
   const ws = new WebSocket(`${proto}://${location.host}/ws/events`);
   const dot = document.getElementById("wsConnDot");
-  const status = document.querySelector(".system-state");
+  const status = document.querySelector(".sys-status");
   const setConnectionState = (connected) => {
     state.wsEventsConnected = connected;
     dot.classList.toggle("connected", connected);
@@ -458,7 +474,7 @@ function connectEventStream() {
 
 function renderViolationEvent(event) {
   const feed = document.getElementById("eventFeed");
-  const empty = feed.querySelector(".event-empty"); if (empty) empty.remove();
+  const empty = feed.querySelector(".empty-state"); if (empty) empty.remove();
   const item = document.createElement("div"); item.className = "event-item";
   const label = (event.violation_type || "").replace("no_", "Missing ").replace("_", " ");
   const snapshotUrl = event.snapshot_url || (event.violation_id ? `/api/snapshot/${event.violation_id}` : null);
@@ -648,10 +664,10 @@ function drawEmptyState(ctx, w, h) {
 // Tabs
 // ---------------------------------------------------------------
 function setupTabs() {
-  document.querySelectorAll(".tab-btn").forEach((btn) => {
+  document.querySelectorAll(".mode-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-pane").forEach(c => c.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
       if (btn.dataset.tab === "analytics") refreshStats();

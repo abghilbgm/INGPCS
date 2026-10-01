@@ -28,6 +28,15 @@ BOX_COLOR_VIOLATION = (0, 0, 255)
 BOX_COLOR_OK = (0, 200, 0)
 
 
+def _resize_to_output(frame):
+    """Resize any frame to the configured output resolution (default 1920x1080)."""
+    h, w = frame.shape[:2]
+    target_w, target_h = config.OUTPUT_WIDTH, config.OUTPUT_HEIGHT
+    if w == target_w and h == target_h:
+        return frame
+    return cv2.resize(frame, (target_w, target_h), interpolation=cv2.INTER_LINEAR)
+
+
 def _draw_annotations(frame, statuses, camera_label: str):
     for status in statuses:
         x1, y1, x2, y2 = status.box
@@ -193,6 +202,7 @@ class CameraManager:
                 now = time.time()
                 if now - last_broadcast >= broadcast_interval:
                     annotated = _draw_annotations(frame.copy(), last_statuses, f"{camera_name} ({area_group_name})")
+                    annotated = _resize_to_output(annotated)
                     ok, buf = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, config.JPEG_QUALITY])
                     if ok:
                         await hub.broadcast_frame(camera_id, buf.tobytes())

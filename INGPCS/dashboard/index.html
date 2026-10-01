@@ -3,160 +3,164 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>INGPCE — Industrial Safety Operations</title>
+<title>INGPCE — SURVEILLANCE OPERATIONS CENTER</title>
 <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
 
-<div class="app-shell">
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark"></span>
-      <div class="brand-text"><h1>INGPCE</h1><span>INDUSTRIAL SAFETY OPERATIONS</span></div>
+<div class="ops-shell">
+  <header class="cmd-bar">
+    <div class="cmd-left">
+      <div class="agency-badge"></div>
+      <div class="agency-text"><h1>INGPCE</h1><span>SURVEILLANCE OPERATIONS CENTER</span></div>
     </div>
-    <div class="topbar-stats" id="topbarStats">
-      <div class="tstat"><span class="tstat-value" id="statCamerasOnline">–</span><span class="tstat-label">Cameras Online</span></div>
-      <div class="tstat"><span class="tstat-value" id="statViolations24h">–</span><span class="tstat-label">Violations (24h)</span></div>
-      <div class="tstat"><span class="tstat-value" id="statActiveRules">–</span><span class="tstat-label">Active Rules</span></div>
+    <div class="cmd-stats" id="topbarStats">
+      <div class="cmd-stat"><span class="stat-val" id="statCamerasOnline">–</span><span class="stat-lbl">FEEDS ACTIVE</span></div>
+      <div class="cmd-stat threat"><span class="stat-val" id="statViolations24h">–</span><span class="stat-lbl">THREATS 24H</span></div>
+      <div class="cmd-stat"><span class="stat-val" id="statActiveRules">–</span><span class="stat-lbl">ALERT RULES</span></div>
     </div>
-    <div class="topbar-clock"><span class="system-state">STREAM CONNECTING</span><span id="liveClock">--:--:--</span><span class="conn-dot" id="wsConnDot" aria-label="Event stream connecting" title="Event stream connection"></span></div>
+    <div class="cmd-right">
+      <span class="sys-status">SYSTEM INITIALIZING</span>
+      <span class="cmd-clock" id="liveClock">--:--:--</span>
+      <span class="conn-indicator" id="wsConnDot" title="Event stream"></span>
+    </div>
   </header>
 
-  <main class="main-grid">
-    <section class="camera-panel">
-      <div class="panel-header">
-        <h2>Camera Wall</h2>
-        <div class="view-toggle">
-          <button class="tab-btn active" data-tab="feeds">Live Wall</button>
-          <button class="tab-btn" data-tab="violations">Incidents</button>
-          <button class="tab-btn" data-tab="analytics">Analytics</button>
-          <button class="tab-btn" data-tab="cameras">Cameras</button>
-          <button class="tab-btn" data-tab="rules">Alert Rules</button>
+  <main class="ops-grid">
+    <section class="surveillance-panel">
+      <div class="panel-hdr">
+        <h2><span class="hdr-icon">◉</span> SURVEILLANCE FEEDS</h2>
+        <div class="mode-selector">
+          <button class="mode-btn active" data-tab="feeds">LIVE WALL</button>
+          <button class="mode-btn" data-tab="violations">INCIDENTS</button>
+          <button class="mode-btn" data-tab="analytics">ANALYTICS</button>
+          <button class="mode-btn" data-tab="cameras">CAMERAS</button>
+          <button class="mode-btn" data-tab="rules">ALERT RULES</button>
         </div>
       </div>
 
-      <div id="tab-feeds" class="tab-content active">
-        <div class="feeds-toolbar">
-          <button class="btn-secondary" id="btnReconnectAll">↻ Reconnect All Cameras</button>
+      <div id="tab-feeds" class="tab-pane active">
+        <div class="feeds-controls">
+          <button class="ops-btn" id="btnReconnectAll">↻ RECONNECT ALL FEEDS</button>
         </div>
         <div id="feedsByGroup"></div>
       </div>
 
-      <div id="tab-violations" class="tab-content">
-        <div class="violations-toolbar">
-          <select id="violationCameraFilter"><option value="">All Cameras</option></select>
-          <select id="violationAreaGroupFilter"><option value="">All Area Groups</option></select>
+      <div id="tab-violations" class="tab-pane">
+        <div class="filter-bar">
+          <select id="violationCameraFilter"><option value="">ALL CAMERAS</option></select>
+          <select id="violationAreaGroupFilter"><option value="">ALL SECTORS</option></select>
           <select id="violationTypeFilter">
-            <option value="">All Violation Types</option>
-            <option value="no_helmet">Missing Helmet</option>
-            <option value="no_vest">Missing Vest</option>
-            <option value="no_mask">Missing Mask</option>
-            <option value="no_gloves">Missing Gloves</option>
-            <option value="no_boots">Missing Boots</option>
-            <option value="no_goggles">Missing Goggles</option>
+            <option value="">ALL THREAT TYPES</option>
+            <option value="no_helmet">MISSING HELMET</option>
+            <option value="no_vest">MISSING VEST</option>
+            <option value="no_mask">MISSING MASK</option>
+            <option value="no_gloves">MISSING GLOVES</option>
+            <option value="no_boots">MISSING BOOTS</option>
+            <option value="no_goggles">MISSING GOGGLES</option>
           </select>
-          <button class="btn-secondary" id="btnRefreshViolations">↻ Refresh</button>
+          <button class="ops-btn" id="btnRefreshViolations">↻ REFRESH</button>
         </div>
-        <div class="violations-gallery" id="violationsGallery"><div class="event-empty">Loading violations…</div></div>
+        <div class="incidents-grid" id="violationsGallery"><div class="empty-state">LOADING INCIDENT DATA…</div></div>
       </div>
 
-      <div id="tab-analytics" class="tab-content">
+      <div id="tab-analytics" class="tab-pane">
         <div class="analytics-grid">
-          <div class="card chart-card"><h3>Violations — Last 24h</h3><canvas id="hourlyChart" height="160"></canvas></div>
-          <div class="card chart-card"><h3>By Violation Type</h3><canvas id="typeChart" height="160"></canvas></div>
-          <div class="card chart-card wide"><h3>By Area Group</h3><canvas id="areaGroupChart" height="140"></canvas></div>
+          <div class="intel-card"><h3>▶ THREAT TIMELINE — 24H</h3><canvas id="hourlyChart" height="160"></canvas></div>
+          <div class="intel-card"><h3>▶ THREAT CLASSIFICATION</h3><canvas id="typeChart" height="160"></canvas></div>
+          <div class="intel-card wide"><h3>▶ SECTOR ANALYSIS</h3><canvas id="areaGroupChart" height="140"></canvas></div>
         </div>
       </div>
 
-      <div id="tab-cameras" class="tab-content">
-        <div class="cameras-toolbar">
-          <button class="btn-primary" id="btnNewCamera">+ Add Camera</button>
-          <button class="btn-secondary" id="btnManageGroups">Manage Area Groups</button>
-          <button class="btn-sync" id="btnSyncSeed" title="Adds any of the 16 default cameras (from config.py) that are missing from the database. Never touches existing cameras.">⟲ Sync Default Cameras</button>
-          <span class="sync-status" id="syncStatus"></span>
+      <div id="tab-cameras" class="tab-pane">
+        <div class="cam-toolbar">
+          <button class="ops-btn" id="btnNewCamera">+ ADD CAMERA</button>
+          <button class="ops-btn-sec" id="btnManageGroups">MANAGE SECTORS</button>
+          <button class="ops-btn-sync" id="btnSyncSeed" title="Sync default cameras">⟲ SYNC DEFAULTS</button>
+          <span class="sync-msg" id="syncStatus"></span>
         </div>
-        <table class="rules-table cameras-table">
-          <thead><tr><th>Camera ID</th><th>Name</th><th>Area Group</th><th>Required PPE</th><th>Status</th><th>State</th><th></th></tr></thead>
+        <table class="ops-table">
+          <thead><tr><th>ID</th><th>DESIGNATION</th><th>SECTOR</th><th>REQUIRED PPE</th><th>LINK</th><th>STATE</th><th>ACTIONS</th></tr></thead>
           <tbody id="camerasTableBody"></tbody>
         </table>
       </div>
 
-      <div id="tab-rules" class="tab-content">
+      <div id="tab-rules" class="tab-pane">
         <div class="rules-panel">
-          <div class="rules-header"><h3>Alert Rules</h3><button class="btn-primary" id="btnNewRule">+ New Rule</button></div>
-          <table class="rules-table">
-            <thead><tr><th>Name</th><th>Camera</th><th>Zone</th><th>Violation</th><th>Channels</th><th>Cooldown</th><th>Status</th><th></th></tr></thead>
+          <div class="rules-hdr"><h3>ALERT RULES</h3><button class="ops-btn" id="btnNewRule">+ NEW RULE</button></div>
+          <table class="ops-table">
+            <thead><tr><th>RULE</th><th>CAMERA</th><th>SECTOR</th><th>THREAT TYPE</th><th>CHANNELS</th><th>COOLDOWN</th><th>STATUS</th><th>ACTIONS</th></tr></thead>
             <tbody id="rulesTableBody"></tbody>
           </table>
         </div>
       </div>
     </section>
-    <aside class="event-panel">
-      <div class="panel-header"><h2>Incident Queue</h2><span class="live-badge">● LIVE</span></div>
-      <div class="event-feed" id="eventFeed"><div class="event-empty">Waiting for events…</div></div>
+    <aside class="intel-panel">
+      <div class="panel-hdr"><h2><span class="hdr-icon">⚠</span> INCIDENT QUEUE</h2><span class="live-tag">● LIVE</span></div>
+      <div class="intel-feed" id="eventFeed"><div class="empty-state">AWAITING THREAT DATA…</div></div>
     </aside>
   </main>
 </div>
 
-<div class="modal-backdrop" id="cameraModalBackdrop">
-  <div class="modal">
-    <h3 id="cameraModalTitle">Add Camera</h3>
+<div class="modal-overlay" id="cameraModalBackdrop">
+  <div class="ops-modal">
+    <h3 id="cameraModalTitle">ADD CAMERA</h3>
     <form id="cameraForm">
-      <label>Camera ID<input type="text" id="camCameraId" required placeholder="CAM17" /></label>
-      <label>Display Name<input type="text" id="camName" required placeholder="e.g. Loading Dock Entry" /></label>
-      <label>RTSP URL<input type="text" id="camRtspUrl" required placeholder="rtsp://admin:password@192.168.1.53:554/Streaming/Channels/101" /></label>
+      <label>CAMERA ID<input type="text" id="camCameraId" required placeholder="CAM17" /></label>
+      <label>DESIGNATION<input type="text" id="camName" required placeholder="Loading Dock Entry" /></label>
+      <label>RTSP URL<input type="text" id="camRtspUrl" required placeholder="rtsp://admin:pass@192.168.1.53:554/..." /></label>
       <div class="form-row">
-        <label>Area Group<select id="camAreaGroup"><option value="">Unassigned</option></select></label>
-        <label class="checkbox-label" style="align-self:center; margin-top:18px;"><input type="checkbox" id="camEnabled" checked /> Enabled</label>
+        <label>SECTOR<select id="camAreaGroup"><option value="">UNASSIGNED</option></select></label>
+        <label class="chk-label" style="align-self:center; margin-top:18px;"><input type="checkbox" id="camEnabled" checked /> ENABLED</label>
       </div>
-      <label>Required PPE
-        <div class="ppe-checkboxes">
-          <label class="checkbox-label"><input type="checkbox" id="ppeHelmet" checked /> Helmet</label>
-          <label class="checkbox-label"><input type="checkbox" id="ppeVest" checked /> Vest</label>
-          <label class="checkbox-label"><input type="checkbox" id="ppeMask" /> Mask</label>
-          <label class="checkbox-label"><input type="checkbox" id="ppeGloves" /> Gloves</label>
-          <label class="checkbox-label"><input type="checkbox" id="ppeBoots" /> Boots</label>
-          <label class="checkbox-label"><input type="checkbox" id="ppeGoggles" /> Goggles</label>
+      <label>REQUIRED PPE
+        <div class="ppe-checks">
+          <label class="chk-label"><input type="checkbox" id="ppeHelmet" checked /> Helmet</label>
+          <label class="chk-label"><input type="checkbox" id="ppeVest" checked /> Vest</label>
+          <label class="chk-label"><input type="checkbox" id="ppeMask" /> Mask</label>
+          <label class="chk-label"><input type="checkbox" id="ppeGloves" /> Gloves</label>
+          <label class="chk-label"><input type="checkbox" id="ppeBoots" /> Boots</label>
+          <label class="chk-label"><input type="checkbox" id="ppeGoggles" /> Goggles</label>
         </div>
       </label>
-      <div class="modal-actions">
-        <button type="button" class="btn-secondary" id="btnCancelCamera">Cancel</button>
-        <button type="submit" class="btn-primary">Save Camera</button>
+      <div class="modal-btns">
+        <button type="button" class="ops-btn-sec" id="btnCancelCamera">CANCEL</button>
+        <button type="submit" class="ops-btn">SAVE</button>
       </div>
     </form>
   </div>
 </div>
 
-<div class="modal-backdrop" id="groupsModalBackdrop">
-  <div class="modal">
-    <h3>Area Groups</h3>
-    <div class="groups-add-row">
-      <input type="text" id="newGroupName" placeholder="New area group name" />
-      <input type="text" id="newGroupDesc" placeholder="Description (optional)" />
-      <button class="btn-primary" id="btnAddGroup">+ Add</button>
+<div class="modal-overlay" id="groupsModalBackdrop">
+  <div class="ops-modal">
+    <h3>SECTOR MANAGEMENT</h3>
+    <div class="grp-add-row">
+      <input type="text" id="newGroupName" placeholder="New sector name" />
+      <input type="text" id="newGroupDesc" placeholder="Description" />
+      <button class="ops-btn" id="btnAddGroup">+ ADD</button>
     </div>
-    <table class="rules-table">
-      <thead><tr><th>Name</th><th>Description</th><th>Cameras</th><th></th></tr></thead>
+    <table class="ops-table">
+      <thead><tr><th>SECTOR</th><th>DESCRIPTION</th><th>CAMERAS</th><th></th></tr></thead>
       <tbody id="groupsTableBody"></tbody>
     </table>
-    <div class="modal-actions"><button type="button" class="btn-secondary" id="btnCloseGroups">Close</button></div>
+    <div class="modal-btns"><button type="button" class="ops-btn-sec" id="btnCloseGroups">CLOSE</button></div>
   </div>
 </div>
 
-<div class="modal-backdrop" id="ruleModalBackdrop">
-  <div class="modal">
-    <h3 id="ruleModalTitle">New Alert Rule</h3>
+<div class="modal-overlay" id="ruleModalBackdrop">
+  <div class="ops-modal">
+    <h3 id="ruleModalTitle">NEW ALERT RULE</h3>
     <form id="ruleForm">
       <input type="hidden" id="ruleId" />
-      <label>Rule Name<input type="text" id="ruleName" required placeholder="e.g. Substation Helmet Escalation" /></label>
+      <label>RULE NAME<input type="text" id="ruleName" required placeholder="Substation Helmet Escalation" /></label>
       <div class="form-row">
-        <label>Camera (blank = any)<input type="text" id="ruleCameraId" placeholder="CAM01" /></label>
-        <label>Zone (blank = any)<input type="text" id="ruleZone" placeholder="Substation" /></label>
+        <label>CAMERA (blank=any)<input type="text" id="ruleCameraId" placeholder="CAM01" /></label>
+        <label>SECTOR (blank=any)<input type="text" id="ruleZone" placeholder="Substation" /></label>
       </div>
       <div class="form-row">
-        <label>Violation Type
+        <label>THREAT TYPE
           <select id="ruleViolationType">
-            <option value="">Any</option>
+            <option value="">ANY</option>
             <option value="no_helmet">Missing Helmet</option>
             <option value="no_vest">Missing Vest</option>
             <option value="no_mask">Missing Mask</option>
@@ -165,26 +169,26 @@
             <option value="no_goggles">Missing Goggles</option>
           </select>
         </label>
-        <label>Cooldown (seconds)<input type="number" id="ruleCooldown" value="300" min="10" /></label>
+        <label>COOLDOWN (sec)<input type="number" id="ruleCooldown" value="300" min="10" /></label>
       </div>
       <div class="form-row">
-        <label class="checkbox-label"><input type="checkbox" id="chanTeams" checked /> Teams</label>
-        <label class="checkbox-label"><input type="checkbox" id="chanEmail" /> Email</label>
-        <label class="checkbox-label toggle-enabled"><input type="checkbox" id="ruleEnabled" checked /> Enabled</label>
+        <label class="chk-label"><input type="checkbox" id="chanTeams" checked /> Teams</label>
+        <label class="chk-label"><input type="checkbox" id="chanEmail" /> Email</label>
+        <label class="chk-label"><input type="checkbox" id="ruleEnabled" checked /> Enabled</label>
       </div>
-      <label>Email Recipients (comma-separated)<input type="text" id="ruleEmailRecipients" placeholder="safety.team@company.com" /></label>
-      <div class="modal-actions">
-        <button type="button" class="btn-secondary" id="btnCancelRule">Cancel</button>
-        <button type="submit" class="btn-primary">Save Rule</button>
+      <label>EMAIL RECIPIENTS<input type="text" id="ruleEmailRecipients" placeholder="safety.team@company.com" /></label>
+      <div class="modal-btns">
+        <button type="button" class="ops-btn-sec" id="btnCancelRule">CANCEL</button>
+        <button type="submit" class="ops-btn">SAVE RULE</button>
       </div>
     </form>
   </div>
 </div>
 
-<div class="lightbox-backdrop" id="lightboxBackdrop">
-  <div class="lightbox">
+<div class="modal-overlay" id="lightboxBackdrop">
+  <div class="lightbox-inner">
     <button class="lightbox-close" id="lightboxClose">✕</button>
-    <img id="lightboxImage" src="" alt="Violation snapshot" />
+    <img id="lightboxImage" alt="Evidence" />
     <div class="lightbox-caption" id="lightboxCaption"></div>
   </div>
 </div>

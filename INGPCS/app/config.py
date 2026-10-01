@@ -144,6 +144,12 @@ SNAPSHOT_DIR: str = _env("PPE_SNAPSHOT_DIR", "snapshots")
 # ---------------------------------------------------------------------------
 API_HOST: str = _env("PPE_API_HOST", "127.0.0.1")
 API_PORT: int = int(_env("PPE_API_PORT", "8080"))
-JPEG_QUALITY: int = int(_env("PPE_JPEG_QUALITY", "82"))
-BROADCAST_FPS: int = int(_env("PPE_BROADCAST_FPS", "12"))
+JPEG_QUALITY: int = int(_env("PPE_JPEG_QUALITY", "70"))
+BROADCAST_FPS: int = int(_env("PPE_BROADCAST_FPS", "24"))
 CAMERA_STATUS_UPDATE_INTERVAL: float = float(_env("PPE_STATUS_UPDATE_INTERVAL", "4"))
+
+# ---------------------------------------------------------------------------
+# 8. OUTPUT RESOLUTION — every frame is resized to this before broadcast
+# ---------------------------------------------------------------------------
+OUTPUT_WIDTH: int = int(_env("PPE_OUTPUT_WIDTH", "1920"))
+OUTPUT_HEIGHT: int = int(_env("PPE_OUTPUT_HEIGHT", "1080"))
